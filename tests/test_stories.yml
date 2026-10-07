@@ -1,0 +1,115 @@
+version: "3.1"
+
+# ============================================================
+#  AI-DRCS  —  Conversation Tests
+#  Run with: rasa test
+#  These verify end-to-end conversation behaviour after training.
+# ============================================================
+
+stories:
+
+  - story: test - greeting flow
+    steps:
+      - user: "hi"
+        intent: greet
+      - action: utter_greet
+      - user: "bye"
+        intent: goodbye
+      - action: utter_goodbye
+
+  - story: test - soundbox red light with auth
+    steps:
+      - user: "my soundbox is blinking red"
+        intent: device_blinking_red
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - user: "9876543210"
+        intent: provide_msisdn
+        entities:
+          - msisdn: "9876543210"
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_blinking_red
+
+  - story: test - transaction failed
+    steps:
+      - user: "my transaction failed"
+        intent: transaction_failed
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - user: "9876543210"
+        intent: provide_msisdn
+        entities:
+          - msisdn: "9876543210"
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_transaction_failed
+
+  - story: test - refund request end to end
+    steps:
+      - user: "I want a refund"
+        intent: transaction_refund_request
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - user: "9876543210"
+        intent: provide_msisdn
+        entities:
+          - msisdn: "9876543210"
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: refund_form
+      - active_loop: refund_form
+      - user: "UTR400123456789"
+        intent: provide_transaction_id
+        entities:
+          - transaction_id: "UTR400123456789"
+      - user: "500 rupees"
+        intent: provide_amount
+        entities:
+          - amount: 500
+      - action: refund_form
+      - active_loop: null
+      - action: action_initiate_refund
+
+  - story: test - escalate to human
+    steps:
+      - user: "I want to talk to a human"
+        intent: escalate_to_human
+      - action: action_escalate_to_human
+      - action: utter_escalate
+
+  - story: test - device no sound
+    steps:
+      - user: "soundbox is not making sound"
+        intent: device_no_sound
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - user: "9876543210"
+        intent: provide_msisdn
+        entities:
+          - msisdn: "9876543210"
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_no_sound
+
+  - story: test - settlement cycle query
+    steps:
+      - user: "when will I get my settlement"
+        intent: settlement_cycle_query
+      - action: utter_settlement_cycle
+
+  - story: test - help then goodbye
+    steps:
+      - user: "help"
+        intent: help
+      - action: utter_help
+      - user: "thanks"
+        intent: thanks
+      - action: utter_thanks
+      - user: "goodbye"
+        intent: goodbye
+      - action: utter_goodbye
