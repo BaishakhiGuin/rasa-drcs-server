@@ -1,0 +1,432 @@
+version: "3.1"
+
+# ============================================================
+#  AI-DRCS  —  Stories (Conversation Flows)
+#  These teach Rasa the full conversation arc for each flow.
+# ============================================================
+
+stories:
+
+# ─── GREETING FLOWS ──────────────────────────────────────────────────────────
+
+  - story: simple greeting and help
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: help
+      - action: utter_help
+
+  - story: greet and device issue
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: device_not_working
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_default
+
+  - story: greet then goodbye
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: goodbye
+      - action: utter_goodbye
+
+# ─── DEVICE ISSUE FLOWS ──────────────────────────────────────────────────────
+
+  - story: red blinking light - resolved
+    steps:
+      - intent: device_blinking_red
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_blinking_red
+      - intent: affirm
+      - action: utter_thanks
+      - intent: goodbye
+      - action: utter_goodbye
+
+  - story: red blinking light - needs replacement
+    steps:
+      - intent: device_blinking_red
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_blinking_red
+      - intent: deny
+      - action: device_issue_form
+      - active_loop: device_issue_form
+      - action: device_issue_form
+      - active_loop: null
+      - action: action_check_device_status
+      - action: utter_device_replace_request
+      - intent: affirm
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: device no sound
+    steps:
+      - intent: device_no_sound
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_no_sound
+      - intent: affirm
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: device display blank
+    steps:
+      - intent: device_display_blank
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_display_blank
+      - intent: deny
+      - action: utter_device_replace_request
+      - intent: affirm
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: device overheating
+    steps:
+      - intent: device_overheating
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_overheating
+      - intent: affirm
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: device charging issue
+    steps:
+      - intent: device_charging_issue
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_charging_issue
+      - intent: deny
+      - action: utter_device_replace_request
+      - intent: affirm
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: device GSM SIM issue
+    steps:
+      - intent: device_gsm_issue
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_gsm_issue
+      - intent: deny
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: user wants device replacement directly
+    steps:
+      - intent: device_replace_request
+      - action: device_issue_form
+      - active_loop: device_issue_form
+      - action: device_issue_form
+      - active_loop: null
+      - action: action_check_device_status
+      - action: utter_device_replace_request
+      - intent: affirm
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: device reset request with warning
+    steps:
+      - intent: device_reset_request
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_reset_confirm
+      - intent: affirm
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+      - intent: goodbye
+      - action: utter_goodbye
+
+  - story: device reset request - user cancels
+    steps:
+      - intent: device_reset_request
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_device_reset_confirm
+      - intent: deny
+      - action: utter_deny
+      - intent: goodbye
+      - action: utter_goodbye
+
+# ─── TRANSACTION FLOWS ───────────────────────────────────────────────────────
+
+  - story: transaction failed - simple explanation
+    steps:
+      - intent: transaction_failed
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_transaction_failed
+      - intent: transaction_status_check
+      - action: transaction_form
+      - active_loop: transaction_form
+      - action: transaction_form
+      - active_loop: null
+      - action: action_check_transaction_status
+      - intent: goodbye
+      - action: utter_goodbye
+
+  - story: transaction pending - check status
+    steps:
+      - intent: transaction_pending
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_transaction_pending
+      - intent: affirm
+      - action: transaction_form
+      - active_loop: transaction_form
+      - action: transaction_form
+      - active_loop: null
+      - action: action_check_transaction_status
+
+  - story: double debit complaint
+    steps:
+      - intent: transaction_double_debit
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_transaction_double_debit
+      - intent: provide_transaction_id
+      - action: refund_form
+      - active_loop: refund_form
+      - action: refund_form
+      - active_loop: null
+      - action: action_initiate_refund
+      - action: utter_refund_initiated
+
+  - story: refund request full flow
+    steps:
+      - intent: transaction_refund_request
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: refund_form
+      - active_loop: refund_form
+      - action: refund_form
+      - active_loop: null
+      - action: action_initiate_refund
+      - action: utter_refund_initiated
+      - intent: thanks
+      - action: utter_thanks
+
+  - story: settlement delay inquiry
+    steps:
+      - intent: transaction_settlement_delay
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_settlement_delay
+      - action: action_check_settlement_status
+      - intent: complaint_register
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: settlement not received - raise complaint
+    steps:
+      - intent: settlement_not_received
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_settlement_delay
+      - action: action_check_settlement_status
+      - intent: affirm
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: settlement cycle query
+    steps:
+      - intent: settlement_cycle_query
+      - action: utter_settlement_cycle
+      - intent: goodbye
+      - action: utter_goodbye
+
+  - story: transaction status check direct
+    steps:
+      - intent: transaction_status_check
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: transaction_form
+      - active_loop: transaction_form
+      - action: transaction_form
+      - active_loop: null
+      - action: action_check_transaction_status
+
+# ─── UPI FLOWS ───────────────────────────────────────────────────────────────
+
+  - story: UPI not working
+    steps:
+      - intent: upi_not_working
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_upi_not_working
+      - intent: deny
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: QR code issue
+    steps:
+      - intent: qr_code_issue
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_qr_code_issue
+
+  - story: payment success no beep - education
+    steps:
+      - intent: payment_success_no_beep
+      - action: utter_payment_success_no_beep
+      - intent: thanks
+      - action: utter_thanks
+
+# ─── ACCOUNT / KYC FLOWS ─────────────────────────────────────────────────────
+
+  - story: account suspended
+    steps:
+      - intent: account_suspended
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_account_suspended
+      - intent: kyc_document_upload
+      - action: utter_kyc_pending
+
+  - story: KYC pending help
+    steps:
+      - intent: kyc_pending
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: utter_kyc_pending
+
+# ─── ONBOARDING FLOWS ────────────────────────────────────────────────────────
+
+  - story: device setup help
+    steps:
+      - intent: device_setup_help
+      - action: utter_device_setup
+
+  - story: SIM setup help
+    steps:
+      - intent: sim_setup_help
+      - action: utter_sim_setup
+
+  - story: full onboarding guidance
+    steps:
+      - intent: onboarding_help
+      - action: utter_device_setup
+      - intent: sim_setup_help
+      - action: utter_sim_setup
+      - intent: app_setup_help
+      - action: utter_device_setup
+
+# ─── ESCALATION FLOWS ────────────────────────────────────────────────────────
+
+  - story: user asks to escalate
+    steps:
+      - intent: escalate_to_human
+      - action: action_escalate_to_human
+      - action: utter_escalate
+
+  - story: register complaint directly
+    steps:
+      - intent: complaint_register
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+      - action: complaint_form
+      - active_loop: complaint_form
+      - action: complaint_form
+      - active_loop: null
+      - action: action_register_complaint
+      - action: utter_complaint_registered
+
+  - story: check complaint status
+    steps:
+      - intent: complaint_status
+      - action: utter_complaint_status
+
+  - story: out of scope handled gracefully
+    steps:
+      - intent: out_of_scope
+      - action: utter_out_of_scope
+      - intent: device_not_working
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+
+# ─── RAG FALLBACK FLOWS ──────────────────────────────────────────────────────
+
+  - story: unknown question goes to RAG
+    steps:
+      - intent: out_of_scope
+      - action: action_rag_search
+
+  - story: help then rag
+    steps:
+      - intent: help
+      - action: utter_help
+      - intent: out_of_scope
+      - action: action_rag_search
