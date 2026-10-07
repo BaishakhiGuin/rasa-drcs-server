@@ -1,0 +1,109 @@
+version: "3.1"
+
+# ============================================================
+#  AI-DRCS  —  Rules (Always-on deterministic responses)
+#  Rules fire regardless of conversation history.
+# ============================================================
+
+rules:
+
+  # ─── Greetings ─────────────────────────────────────────────────────────────
+  - rule: Respond to greet always
+    steps:
+      - intent: greet
+      - action: utter_greet
+
+  - rule: Respond to goodbye
+    steps:
+      - intent: goodbye
+      - action: utter_goodbye
+
+  - rule: Respond to thanks
+    steps:
+      - intent: thanks
+      - action: utter_thanks
+
+  - rule: Help request
+    steps:
+      - intent: help
+      - action: utter_help
+
+  - rule: Out of scope
+    steps:
+      - intent: out_of_scope
+      - action: utter_out_of_scope
+
+  - rule: Restart conversation
+    steps:
+      - intent: restart_conversation
+      - action: action_restart
+      - action: utter_restart
+
+  # ─── Always escalate on demand ─────────────────────────────────────────────
+  - rule: Escalate to human immediately
+    steps:
+      - intent: escalate_to_human
+      - action: action_escalate_to_human
+      - action: utter_escalate
+
+  # ─── Payment success no beep is purely educational ─────────────────────────
+  - rule: Payment success no beep education
+    steps:
+      - intent: payment_success_no_beep
+      - action: utter_payment_success_no_beep
+
+  # ─── Settlement cycle is informational ────────────────────────────────────
+  - rule: Settlement cycle info
+    steps:
+      - intent: settlement_cycle_query
+      - action: utter_settlement_cycle
+
+  # ─── Forms: activate ───────────────────────────────────────────────────────
+  - rule: Activate merchant auth form
+    condition:
+      - active_loop: null
+    steps:
+      - intent: provide_msisdn
+      - action: merchant_auth_form
+      - active_loop: merchant_auth_form
+
+  - rule: Submit merchant auth form
+    condition:
+      - active_loop: merchant_auth_form
+    steps:
+      - action: merchant_auth_form
+      - active_loop: null
+      - action: action_authenticate_merchant
+
+  - rule: Submit transaction form
+    condition:
+      - active_loop: transaction_form
+    steps:
+      - action: transaction_form
+      - active_loop: null
+      - action: action_check_transaction_status
+
+  - rule: Submit device issue form
+    condition:
+      - active_loop: device_issue_form
+    steps:
+      - action: device_issue_form
+      - active_loop: null
+      - action: action_check_device_status
+
+  - rule: Submit refund form
+    condition:
+      - active_loop: refund_form
+    steps:
+      - action: refund_form
+      - active_loop: null
+      - action: action_initiate_refund
+
+  - rule: Submit complaint form
+    condition:
+      - active_loop: complaint_form
+    steps:
+      - action: complaint_form
+      - active_loop: null
+      - action: action_register_complaint
+      - action: utter_complaint_registered
