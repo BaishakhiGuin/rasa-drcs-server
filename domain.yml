@@ -1,0 +1,600 @@
+version: "3.1"
+
+# ============================================================
+#  AI-DRCS  —  Rasa Pro Domain
+#  Domain: Merchant Support for Soundbox / UPI Payment Devices
+#  Language: English
+# ============================================================
+
+# ─── INTENTS ─────────────────────────────────────────────────────────────────
+intents:
+  # Greeting & meta
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - thanks
+  - help
+  - out_of_scope
+  - restart_conversation
+
+  # Device issues
+  - device_not_working
+  - device_blinking_red
+  - device_blinking_green
+  - device_no_sound
+  - device_display_blank
+  - device_overheating
+  - device_restart_loop
+  - device_charging_issue
+  - device_wifi_issue
+  - device_gsm_issue
+  - device_button_stuck
+  - device_replace_request
+  - device_reset_request
+
+  # Transaction issues
+  - transaction_failed
+  - transaction_pending
+  - transaction_double_debit
+  - transaction_refund_request
+  - transaction_settlement_delay
+  - transaction_wrong_amount
+  - transaction_not_received
+  - transaction_status_check
+
+  # UPI / Payment
+  - upi_not_working
+  - upi_id_not_linked
+  - upi_bank_issue
+  - upi_limit_exceeded
+  - qr_code_issue
+  - payment_success_no_beep
+
+  # Account & KYC
+  - account_suspended
+  - kyc_pending
+  - kyc_document_upload
+  - account_status_check
+  - merchant_details_update
+  - bank_account_change
+
+  # Settlement
+  - settlement_not_received
+  - settlement_delay
+  - settlement_amount_wrong
+  - settlement_cycle_query
+
+  # Onboarding
+  - onboarding_help
+  - app_setup_help
+  - device_setup_help
+  - sim_setup_help
+
+  # Escalation
+  - escalate_to_human
+  - complaint_register
+  - complaint_status
+
+  # Slot filling triggers
+  - provide_msisdn
+  - provide_transaction_id
+  - provide_device_serial
+  - provide_amount
+  - provide_date
+  - provide_upi_id
+  - provide_bank_name
+
+# ─── ENTITIES ────────────────────────────────────────────────────────────────
+entities:
+  - msisdn
+  - transaction_id
+  - device_serial
+  - amount
+  - date
+  - upi_id
+  - bank_name
+  - issue_type
+  - device_status
+  - error_code
+  - merchant_name
+  - complaint_id
+
+# ─── SLOTS ───────────────────────────────────────────────────────────────────
+slots:
+  msisdn:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: msisdn
+      - type: from_text
+        conditions:
+          - active_loop: merchant_auth_form
+            requested_slot: msisdn
+
+  transaction_id:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: transaction_id
+      - type: from_text
+        conditions:
+          - active_loop: transaction_form
+            requested_slot: transaction_id
+
+  device_serial:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: device_serial
+      - type: from_text
+        conditions:
+          - active_loop: device_issue_form
+            requested_slot: device_serial
+
+  amount:
+    type: float
+    mappings:
+      - type: from_entity
+        entity: amount
+      - type: from_text
+        conditions:
+          - active_loop: refund_form
+            requested_slot: amount
+
+  date:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: date
+      - type: from_text
+        conditions:
+          - active_loop: transaction_form
+            requested_slot: date
+
+  upi_id:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: upi_id
+      - type: from_text
+        conditions:
+          - active_loop: upi_form
+            requested_slot: upi_id
+
+  bank_name:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: bank_name
+      - type: from_text
+        conditions:
+          - active_loop: bank_issue_form
+            requested_slot: bank_name
+
+  issue_type:
+    type: categorical
+    values:
+      - device
+      - transaction
+      - upi
+      - settlement
+      - account
+      - onboarding
+    mappings:
+      - type: from_entity
+        entity: issue_type
+
+  merchant_authenticated:
+    type: bool
+    initial_value: false
+    mappings:
+      - type: custom
+
+  complaint_id:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: complaint_id
+      - type: custom
+
+  requested_escalation:
+    type: bool
+    initial_value: false
+    mappings:
+      - type: custom
+
+# ─── FORMS ───────────────────────────────────────────────────────────────────
+forms:
+  merchant_auth_form:
+    required_slots:
+      - msisdn
+
+  device_issue_form:
+    required_slots:
+      - msisdn
+      - device_serial
+
+  transaction_form:
+    required_slots:
+      - msisdn
+      - transaction_id
+      - date
+
+  refund_form:
+    required_slots:
+      - msisdn
+      - transaction_id
+      - amount
+
+  upi_form:
+    required_slots:
+      - msisdn
+      - upi_id
+
+  bank_issue_form:
+    required_slots:
+      - msisdn
+      - bank_name
+
+  complaint_form:
+    required_slots:
+      - msisdn
+      - issue_type
+
+# ─── RESPONSES ───────────────────────────────────────────────────────────────
+responses:
+  utter_greet:
+    - text: "Hello! Welcome to AI-DRCS Merchant Support. I'm here to help you with your Soundbox device, UPI transactions, settlements, and account queries. How can I assist you today?"
+    - text: "Hi there! I'm your AI-DRCS support assistant. I can help with device issues, transaction problems, UPI queries, and settlements. What do you need help with?"
+
+  utter_goodbye:
+    - text: "Thank you for contacting AI-DRCS support. Your issue has been noted. Have a great day! 🙏"
+    - text: "Goodbye! If you face any issues again, don't hesitate to reach out. Take care! 🙏"
+
+  utter_thanks:
+    - text: "You're welcome! Is there anything else I can help you with?"
+    - text: "Happy to help! Let me know if you need anything else."
+
+  utter_affirm:
+    - text: "Great! Let me proceed with that."
+
+  utter_deny:
+    - text: "No problem! Is there something else I can help you with?"
+
+  utter_help:
+    - text: |
+        I can help you with the following:
+        
+        📱 **Device Issues** — Soundbox not working, blinking lights, no sound, display blank
+        💳 **Transactions** — Failed payments, pending transactions, wrong amounts, refunds
+        🔄 **UPI Problems** — UPI not working, bank not linked, QR code issues
+        💰 **Settlements** — Settlement delays, wrong amounts, cycle queries
+        👤 **Account** — KYC, suspension, merchant details update
+        📋 **Complaints** — Register and track complaints
+        
+        Just describe your problem and I'll guide you through the solution!
+
+  utter_out_of_scope:
+    - text: "I'm sorry, I'm specifically trained to handle Soundbox device and UPI payment support. For other queries, please contact your relationship manager. Is there a device or payment issue I can help with?"
+
+  utter_restart:
+    - text: "Sure, let's start fresh! How can I help you today?"
+
+  # ── Ask slots ──────────────────────────────────────────────────────────────
+  utter_ask_msisdn:
+    - text: "Please provide your registered mobile number (MSISDN) so I can pull up your merchant account."
+
+  utter_ask_transaction_id:
+    - text: "Please share the Transaction ID / UTR number. You can find it in your payment app or Soundbox receipt."
+
+  utter_ask_device_serial:
+    - text: "Could you share your Soundbox serial number? It's printed on the back of the device (starts with SBX-)."
+
+  utter_ask_amount:
+    - text: "What was the transaction amount in question? Please provide the exact amount in INR."
+
+  utter_ask_date:
+    - text: "On which date did this transaction occur? (Format: DD/MM/YYYY)"
+
+  utter_ask_upi_id:
+    - text: "Please share your UPI ID (e.g. yourname@bankname or your VPA)."
+
+  utter_ask_bank_name:
+    - text: "Which bank account is linked to your Soundbox? (e.g. SBI, HDFC, ICICI, Axis)"
+
+  utter_ask_issue_type:
+    - text: "What type of issue are you facing? Please choose: device, transaction, UPI, settlement, or account."
+
+  # ── Device responses ───────────────────────────────────────────────────────
+  utter_device_blinking_red:
+    - text: |
+        A **red blinking light** on your Soundbox typically indicates one of these:
+        
+        🔴 **Low Battery** — Battery below 10%. Please connect the charger immediately.
+        🔴 **No Network** — GSM/WiFi signal is lost. Move to an area with better network.
+        🔴 **Hardware Fault** — If charging doesn't help, the device may need replacement.
+        
+        **Steps to try:**
+        1. Connect the USB-C charger and wait 2 minutes
+        2. If still blinking, toggle WiFi off and back on from device settings
+        3. Restart the device by holding the power button for 10 seconds
+        
+        Has any of these steps resolved the issue?
+
+  utter_device_no_sound:
+    - text: |
+        If your Soundbox is **not making payment sounds**, try these steps:
+        
+        🔊 **Step 1:** Check the volume — press the Volume Up button on the side.
+        🔊 **Step 2:** Ensure the device is not in Silent mode (long press volume up).
+        🔊 **Step 3:** Restart the device (hold power button 10 seconds).
+        🔊 **Step 4:** Check if the speaker grill is blocked or dusty — gently clean it.
+        
+        If the device still has no sound after these steps, it likely needs a hardware replacement. Shall I raise a replacement request?
+
+  utter_device_display_blank:
+    - text: |
+        A **blank display** can be caused by:
+        
+        📺 **Dead Battery** — Charge the device for at least 15 minutes before turning on.
+        📺 **Firmware Crash** — Hold Power + Volume Down for 15 seconds to force restart.
+        📺 **Screen Damage** — Physical damage to the display.
+        
+        Please try the force restart first. Did that bring the screen back?
+
+  utter_device_overheating:
+    - text: |
+        ⚠️ **Overheating Warning** — Please follow these steps immediately:
+        
+        1. **Unplug** the device from the charger right away
+        2. Place it in a **cool, ventilated area** — not in direct sunlight
+        3. Do **not** cover the device
+        4. Wait **15 minutes** before powering it back on
+        
+        Overheating can be caused by continuous charging in a hot environment or a battery defect. If the device overheats regularly, we need to replace it to avoid safety risks. Shall I raise a replacement request?
+
+  utter_device_charging_issue:
+    - text: |
+        **Charging not working?** Here's what to check:
+        
+        🔌 **Step 1:** Try a different USB-C cable and adapter
+        🔌 **Step 2:** Clean the charging port gently with a dry toothbrush
+        🔌 **Step 3:** Check if the charging indicator (small LED) blinks when plugged in
+        🔌 **Step 4:** Try a different power socket
+        
+        If the device still won't charge after these steps, the charging port may be damaged and the device will need replacement. Want me to initiate a replacement?
+
+  utter_device_gsm_issue:
+    - text: |
+        **GSM / SIM connectivity issues** — here's how to fix them:
+        
+        📡 **Step 1:** Check signal bars on the device display — at least 2 bars needed.
+        📡 **Step 2:** Move the device to an open area away from thick walls.
+        📡 **Step 3:** Restart the device to re-register on the network.
+        📡 **Step 4:** Remove and re-insert the SIM card (device must be powered off first).
+        
+        If the SIM is not being detected at all, there may be a SIM slot hardware issue. Shall I raise a complaint for SIM diagnostics?
+
+  utter_device_replace_request:
+    - text: "I'll initiate a device replacement request for you. Our team will verify your account and device details and process the replacement within 3-5 business days. A courier will pick up the faulty device and deliver the replacement. Shall I confirm this replacement request?"
+
+  utter_device_reset_confirm:
+    - text: "⚠️ **Factory Reset Warning** — This will erase all data on your Soundbox. The device will return to factory settings. Your merchant account data is safely stored on our servers and will be restored on reconnection. Do you confirm you want to proceed with the factory reset?"
+
+  # ── Transaction responses ──────────────────────────────────────────────────
+  utter_transaction_failed:
+    - text: |
+        I understand your transaction failed. Here are the most common reasons:
+        
+        ❌ **Insufficient Balance** in payer's account
+        ❌ **Bank Server Down** — try again after 30 minutes
+        ❌ **Incorrect UPI PIN** entered by payer
+        ❌ **Daily Limit Exceeded** on payer's UPI app
+        ❌ **Network Timeout** — the Soundbox lost connection mid-transaction
+        
+        The amount was **NOT debited** if the transaction shows FAILED. 
+        
+        If the payer's bank shows a debit, it will be **auto-reversed within 3-5 business days** by NPCI mandate.
+        
+        Do you need me to check the specific transaction status with the Transaction ID?
+
+  utter_transaction_pending:
+    - text: |
+        A **PENDING** transaction means the payment is still being processed between banks.
+        
+        ⏳ Most pending transactions resolve within **30 minutes to 2 hours**.
+        ⏳ If pending for more than **4 hours**, the transaction will be auto-reversed.
+        
+        **Please do NOT re-attempt the transaction** while it's pending — this may cause double debit.
+        
+        Would you like me to track this transaction? Please share the Transaction ID / UTR.
+
+  utter_transaction_double_debit:
+    - text: |
+        I understand a **double debit** is very concerning. Let me help you immediately.
+        
+        Here's what happens in double debit cases:
+        1. Our system flags duplicate transactions automatically
+        2. The duplicate amount is reversed within **1-3 business days**
+        3. You'll receive an SMS confirmation on your registered number
+        
+        To raise a formal complaint, I'll need:
+        - Both Transaction IDs / UTR numbers
+        - Transaction date and amount
+        
+        Please share these details so I can raise a priority complaint for you.
+
+  utter_refund_initiated:
+    - text: "✅ Your refund request has been registered. Complaint ID: {complaint_id}. The amount will be credited to the original payment source within 3-5 business days. You'll receive an SMS update at each stage. Is there anything else I can help with?"
+
+  utter_transaction_status:
+    - text: "Let me check your transaction status. I'll need your Transaction ID / UTR number and the transaction date to pull the exact status from our system."
+
+  utter_settlement_delay:
+    - text: |
+        **Settlement delays** can occur due to:
+        
+        💰 **Bank Holidays** — settlements don't process on public holidays
+        💰 **Weekend Cycles** — T+1 settlements skip weekends
+        💰 **KYC Hold** — if your KYC is pending, settlements are held
+        💰 **Risk Review** — occasional transaction pattern reviews
+        
+        Standard settlement cycle is **T+1** (next business day by 11 AM).
+        
+        Your current settlement status will be visible in your Merchant App under Settlements. 
+        
+        Shall I check if there's a KYC or compliance hold on your account?
+
+  utter_settlement_cycle:
+    - text: |
+        **Settlement Cycle for your Soundbox account:**
+        
+        📅 **Standard:** T+1 — transactions settled next business day by 11:00 AM IST
+        📅 **Weekend:** Friday transactions settle Monday
+        📅 **Holiday:** Transactions settle the next working day
+        
+        **Minimum settlement amount:** ₹1
+        **Settlement account:** The bank account registered during onboarding
+        
+        To check if a specific settlement is missing, please share the transaction date and amount.
+
+  # ── UPI responses ──────────────────────────────────────────────────────────
+  utter_upi_not_working:
+    - text: |
+        **UPI not working on your Soundbox?** Let's diagnose:
+        
+        🔄 **Step 1:** Check internet connectivity — does the device show network signal?
+        🔄 **Step 2:** Restart the Soundbox
+        🔄 **Step 3:** Ensure your UPI ID is still active in your bank app
+        🔄 **Step 4:** Check if your bank's UPI service is operational (bank website/app)
+        
+        If UPI works on your phone but not Soundbox, the issue is with the device's payment configuration. I can raise a technical reset request. Would you like me to do that?
+
+  utter_qr_code_issue:
+    - text: |
+        **QR Code not scanning?** Here's what to check:
+        
+        📷 **Step 1:** Clean the QR code printout — smudges block scanning
+        📷 **Step 2:** Hold the phone camera steady and within 15-20cm
+        📷 **Step 3:** Ensure the phone camera permissions are enabled for the UPI app
+        📷 **Step 4:** Try generating a fresh QR from your Merchant App
+        
+        If the QR code is physically damaged or faded, you can request a new QR sticker. Shall I arrange that?
+
+  utter_payment_success_no_beep:
+    - text: |
+        If the **payment went through but no confirmation beep** was heard:
+        
+        ✅ **The payment IS successful** — the beep is just a notification, not a requirement.
+        ✅ Check your Soundbox display — it shows ₹ amount and ✓ on successful payments.
+        ✅ Check your Merchant App for the transaction record.
+        
+        To fix the beep issue, increase volume and ensure the speaker is not blocked.
+        
+        Never ask the customer to pay again just because the beep was missing!
+
+  # ── Account / KYC responses ────────────────────────────────────────────────
+  utter_account_suspended:
+    - text: |
+        Your account appears to be **suspended**. This can happen due to:
+        
+        🚫 **Pending KYC** — documents not submitted or under review
+        🚫 **Compliance Hold** — unusual transaction patterns flagged for review
+        🚫 **Bank Account Issue** — settlement account rejected
+        🚫 **Policy Violation** — terms of service breach
+        
+        I'm raising an urgent review request for your account. Our compliance team will contact you within 24 hours on your registered number.
+        
+        In the meantime, please keep your KYC documents ready (Aadhaar, PAN, Business proof).
+
+  utter_kyc_pending:
+    - text: |
+        Your **KYC is pending**. To complete it:
+        
+        📄 **Documents required:**
+        - Aadhaar Card (front + back)
+        - PAN Card
+        - Business Registration Proof (GST / Shop license)
+        - Bank cancelled cheque or passbook
+        
+        📱 **How to submit:**
+        1. Open your Merchant App
+        2. Go to Profile → KYC Documents
+        3. Upload clear photos of each document
+        4. Submit for review
+        
+        KYC verification takes **2-3 business days** once documents are submitted. Would you like me to send you the document upload link?
+
+  # ── Escalation responses ───────────────────────────────────────────────────
+  utter_escalate:
+    - text: "I'm connecting you to a human support agent right now. Please hold — your conversation history and issue details have been shared with the agent for seamless handoff. Expected wait time: 3-5 minutes."
+
+  utter_complaint_registered:
+    - text: "✅ Your complaint has been registered. **Complaint ID: {complaint_id}**. Our team will contact you within 24-48 hours. You can track this complaint in your Merchant App under Support → My Complaints."
+
+  utter_complaint_status:
+    - text: "To check your complaint status, please share your Complaint ID (format: CMP-XXXXXXX). Alternatively, open your Merchant App → Support → My Complaints to see all active and resolved complaints."
+
+  # ── Onboarding responses ───────────────────────────────────────────────────
+  utter_device_setup:
+    - text: |
+        **Soundbox Setup Guide:**
+        
+        📦 **Step 1:** Unbox the device and insert the provided SIM card
+        🔋 **Step 2:** Charge fully before first use (indicator turns green when charged)
+        📱 **Step 3:** Download the **iServeU Merchant App** from Play Store / App Store
+        🔗 **Step 4:** Open the app → Add Device → Enter serial number (on device back)
+        🌐 **Step 5:** Connect to WiFi or ensure SIM has data plan activated
+        ✅ **Step 6:** Make a test transaction of ₹1 to verify everything works
+        
+        The device should announce payment amounts automatically once set up. 
+        Need help with any specific step?
+
+  utter_sim_setup:
+    - text: |
+        **SIM Card Setup for Soundbox:**
+        
+        📡 The SIM card comes pre-configured with a data plan.
+        
+        **To insert:**
+        1. Power OFF the Soundbox
+        2. Use the SIM ejector tool to open the SIM tray (on the side)
+        3. Place SIM in the tray with gold contacts facing down
+        4. Push the tray back in gently
+        5. Power ON — the device will auto-register on the network
+        
+        If the SIM is not detected, restart the device once. If still not detected after 5 minutes, the SIM may need re-provisioning. Shall I raise that request?
+
+  utter_default:
+    - text: "I understand you're facing an issue. Could you please describe the problem in a bit more detail? I want to make sure I provide you with the most accurate solution."
+
+  utter_confirm_action:
+    - text: "Just to confirm — {action_description}. Is this correct?"
+
+  utter_please_wait:
+    - text: "Please give me a moment while I check that for you..."
+
+  utter_rag_fallback:
+    - text: "Let me search our knowledge base for the most accurate answer to your question..."
+
+# ─── ACTIONS ─────────────────────────────────────────────────────────────────
+actions:
+  - action_authenticate_merchant
+  - action_check_transaction_status
+  - action_initiate_refund
+  - action_register_complaint
+  - action_check_device_status
+  - action_escalate_to_human
+  - action_rag_search
+  - action_check_settlement_status
+  - action_generate_complaint_id
+  - validate_merchant_auth_form
+  - validate_transaction_form
+  - validate_device_issue_form
+  - validate_refund_form
+
+# ─── SESSION ─────────────────────────────────────────────────────────────────
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: false

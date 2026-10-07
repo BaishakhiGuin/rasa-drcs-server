@@ -1,0 +1,106 @@
+version: "3.1"
+
+# ============================================================
+#  AI-DRCS  —  Rasa Pipeline & Policy Configuration
+#  Tuned for high-accuracy English intent classification,
+#  slot filling, and entity extraction.
+# ============================================================
+
+language: en
+
+# ─── NLU Pipeline ────────────────────────────────────────────────────────────
+# Strategy: SpacyNLP for linguistic features + DIET for intent + CRF for entities
+
+pipeline:
+
+  # 1. Tokenization
+  - name: WhitespaceTokenizer
+
+  # 2. Feature extraction — character n-grams for typo robustness
+  - name: RegexFeaturizer
+
+  # 3. Lexical + syntactic features (part-of-speech, capitalisation, etc.)
+  - name: LexicalSyntacticFeaturizer
+
+  # 4. Word-level bag of words (handles domain vocabulary well)
+  - name: CountVectorsFeaturizer
+
+  # 5. Character n-gram bag of words (handles misspellings & OOV words)
+  - name: CountVectorsFeaturizer
+    analyzer: char_wb
+    min_ngram: 1
+    max_ngram: 4
+
+  # 6. DIET — main intent classifier + entity extractor
+  #    entity_recognition = True so DIET handles custom entities
+  #    (msisdn, transaction_id, device_serial, amount, etc.)
+  - name: DIETClassifier
+    epochs: 150
+    constrain_similarities: true
+    entity_recognition: true
+    # Transformer-like architecture for better context
+    number_of_transformer_layers: 2
+    transformer_size: 256
+    use_full_entities: true
+
+  # 7. CRF Entity Extractor as a second pass for structured patterns
+  - name: CRFEntityExtractor
+    features:
+      - [low, title, upper]
+      - [BOS, EOS, low, upper, title, digit, prefix5, prefix2, suffix5, suffix3, suffix2, pos, pos2]
+      - [low, title, upper]
+
+  # 8. Rule-based entity extraction for patterns (phone, amounts, transaction IDs)
+  - name: RegexEntityExtractor
+    use_lookup_tables: true
+    use_regexes: true
+    use_word_boundaries: true
+
+  # 9. Entity synonym mapper (maps SBI → State Bank of India, etc.)
+  - name: EntitySynonymMapper
+
+  # 10. Fallback classifier — when confidence is low, trigger fallback intent
+  - name: FallbackClassifier
+    threshold: 0.45
+    ambiguity_threshold: 0.1
+
+# ─── Response Selector (for FAQ-style chitchat) ──────────────────────────────
+# Handles high-frequency informational questions with retrieval
+
+  - name: ResponseSelector
+    epochs: 100
+    constrain_similarities: true
+    retrieval_intent: out_of_scope
+
+# ─── Policies ────────────────────────────────────────────────────────────────
+
+policies:
+
+  # 1. Memoization — memorize exact conversation paths from stories
+  - name: MemoizationPolicy
+    max_history: 8
+
+  # 2. Rule policy — fires on rules.yml deterministically (highest priority)
+  - name: RulePolicy
+    core_fallback_threshold: 0.35
+    core_fallback_action_name: "action_default_fallback"
+    enable_fallback_prediction: true
+
+  # 3. TED — Transformer Embedding Dialogue policy for story-based flows
+  #    High max_history so long device diagnostic conversations are handled
+  - name: TEDPolicy
+    max_history: 12
+    epochs: 100
+    constrain_similarities: true
+    split_entities_by_comma: true
+
+  # 4. Unexpected Intent Policy — handles off-script utterances gracefully
+  - name: UnexpectedIntentPolicy
+    max_history: 5
+    epochs: 100
+
+# ─── Entity Regex Patterns ───────────────────────────────────────────────────
+# These are injected into RegexEntityExtractor to recognise common patterns
+# even without training examples.
+
+# Note: regex patterns are defined in data/lookup_tables.yml (see that file)

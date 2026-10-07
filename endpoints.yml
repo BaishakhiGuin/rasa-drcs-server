@@ -1,0 +1,25 @@
+# ============================================================
+#  AI-DRCS  —  Rasa Endpoints Configuration
+# ============================================================
+
+# Custom action server
+action_endpoint:
+  url: "http://localhost:5055/webhook"
+
+# NLG server (optional — Rasa handles responses internally by default)
+# nlg:
+#   url: "http://localhost:5056/nlg"
+
+# Tracker store — use in-memory for free tier (Redis for production)
+tracker_store:
+  type: InMemoryTrackerStore
+
+# Lock store
+lock_store:
+  type: InMemoryLockStore
+
+# Event broker (optional)
+# event_broker:
+#   type: pika
+#   url: localhost
+#   port: 5672
