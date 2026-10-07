@@ -1,0 +1,855 @@
+version: "3.1"
+
+# ============================================================
+#  AI-DRCS  —  NLU Training Data
+#  Domain: Merchant Soundbox & UPI Payment Support
+#  Language: English
+#  Coverage: ~50 intents, 800+ examples
+# ============================================================
+
+nlu:
+
+# ─── GREETINGS & META ────────────────────────────────────────────────────────
+
+  - intent: greet
+    examples: |
+      - hi
+      - hello
+      - hey
+      - good morning
+      - good afternoon
+      - good evening
+      - hi there
+      - hello there
+      - hey there
+      - howdy
+      - greetings
+      - what's up
+      - hiya
+      - yo
+      - sup
+      - good day
+      - morning
+      - evening
+      - start
+      - begin
+      - I need help
+      - can you help me
+      - help me please
+      - I need support
+      - connect me to support
+
+  - intent: goodbye
+    examples: |
+      - bye
+      - goodbye
+      - see you
+      - see ya
+      - take care
+      - later
+      - talk to you later
+      - that's all for now
+      - I'm done
+      - no more questions
+      - thanks that's all
+      - that will be all
+      - bye bye
+      - ciao
+      - catch you later
+      - I'll disconnect now
+
+  - intent: affirm
+    examples: |
+      - yes
+      - yes please
+      - sure
+      - of course
+      - absolutely
+      - definitely
+      - correct
+      - that's right
+      - confirm
+      - go ahead
+      - proceed
+      - yeah
+      - yep
+      - yup
+      - ok
+      - okay
+      - alright
+      - sounds good
+      - do it
+      - please proceed
+      - confirmed
+      - I confirm
+
+  - intent: deny
+    examples: |
+      - no
+      - no thanks
+      - nope
+      - not really
+      - not right now
+      - that's not right
+      - incorrect
+      - that's wrong
+      - I don't want that
+      - cancel
+      - skip
+      - nevermind
+      - forget it
+      - don't do it
+      - hold on
+      - wait
+
+  - intent: thanks
+    examples: |
+      - thanks
+      - thank you
+      - thank you so much
+      - thanks a lot
+      - many thanks
+      - much appreciated
+      - great help
+      - that was helpful
+      - you've been helpful
+      - perfect thank you
+      - excellent thanks
+      - very helpful thank you
+      - cheers
+
+  - intent: help
+    examples: |
+      - help
+      - what can you do
+      - what can you help with
+      - show me options
+      - what are my options
+      - how can you help me
+      - I need help
+      - what kind of support do you offer
+      - what issues can you solve
+      - tell me what you can do
+      - menu
+      - show menu
+      - main menu
+      - help menu
+      - list of options
+
+  - intent: out_of_scope
+    examples: |
+      - tell me a joke
+      - what's the weather
+      - who are you
+      - what's your name
+      - are you a robot
+      - are you human
+      - what is AI
+      - book me a hotel
+      - order food
+      - what time is it
+      - what day is today
+      - cricket score
+      - stock market
+      - political news
+      - recipe for biryani
+
+  - intent: restart_conversation
+    examples: |
+      - restart
+      - start over
+      - reset
+      - let's start again
+      - new conversation
+      - fresh start
+      - begin again
+      - go back to start
+      - clear everything
+
+# ─── DEVICE ISSUES ───────────────────────────────────────────────────────────
+
+  - intent: device_not_working
+    examples: |
+      - my soundbox is not working
+      - soundbox stopped working
+      - device is not working
+      - my device is dead
+      - soundbox is not responding
+      - the machine is not functioning
+      - payment device not working
+      - my terminal is down
+      - device went off suddenly
+      - soundbox not turning on
+      - device is completely dead
+      - machine stopped
+      - soundbox died
+      - my soundbox has stopped functioning
+      - the payment machine is not starting
+      - soundbox is unresponsive
+      - device not powering on
+      - machine is not starting up
+      - my Soundbox is off and won't turn on
+      - device failure
+      - terminal failure
+      - POS device not working
+
+  - intent: device_blinking_red
+    examples: |
+      - my soundbox is blinking red
+      - red light blinking on device
+      - soundbox showing red light
+      - device blinks red
+      - red LED flashing on soundbox
+      - why is my soundbox red
+      - the red light is blinking continuously
+      - soundbox red indicator
+      - device red warning light
+      - red blinking why
+      - my machine shows red and won't work
+      - soundbox red led is on
+      - the light on my device is red and flashing
+      - device is blinking red light what does it mean
+      - red blink on my payment device
+
+  - intent: device_blinking_green
+    examples: |
+      - soundbox blinking green
+      - green light flashing
+      - green LED blinking
+      - why is my device blinking green
+      - green light on soundbox
+      - device has green flashing light
+      - green indicator keeps blinking
+
+  - intent: device_no_sound
+    examples: |
+      - soundbox is not making sound
+      - no payment announcement
+      - device not beeping
+      - soundbox silent
+      - no voice from device
+      - device won't play sound
+      - payment sound not working
+      - no audio on soundbox
+      - soundbox speaker not working
+      - no confirmation sound
+      - device not saying the amount
+      - I can't hear the payment confirmation
+      - soundbox is mute
+      - the speaker is not working
+      - no beep after payment
+      - device speaker dead
+      - soundbox not announcing payments
+      - can't hear payment notification
+      - audio stopped working on soundbox
+      - no sound coming from the machine
+
+  - intent: device_display_blank
+    examples: |
+      - soundbox screen is blank
+      - device display not working
+      - screen went black
+      - nothing showing on display
+      - soundbox screen is dark
+      - display is off
+      - device has no display
+      - screen blank on soundbox
+      - my device screen is black
+      - display not turning on
+      - the screen went blank suddenly
+      - blank screen on payment terminal
+      - nothing visible on the screen
+
+  - intent: device_overheating
+    examples: |
+      - soundbox is getting very hot
+      - device overheating
+      - machine is too hot
+      - soundbox heating up
+      - device is burning hot
+      - my soundbox is hot to touch
+      - the device is overheating
+      - payment terminal is heating
+      - machine getting hot while charging
+      - soundbox overheated
+
+  - intent: device_charging_issue
+    examples: |
+      - soundbox not charging
+      - device won't charge
+      - charging not working
+      - battery not charging
+      - device stuck at 0% battery
+      - soundbox battery issue
+      - charger not working
+      - charging cable not working
+      - device draining battery fast
+      - battery percentage not increasing
+      - device shows charging but percentage not increasing
+      - charging port not working
+      - won't accept charge
+      - device battery draining too fast
+      - soundbox keeps dying even when plugged in
+
+  - intent: device_wifi_issue
+    examples: |
+      - soundbox not connecting to wifi
+      - wifi not working on device
+      - internet not connected
+      - no wifi on soundbox
+      - device wifi issue
+      - soundbox can't connect to network
+      - wifi keeps disconnecting
+      - device showing no internet
+      - network not available on soundbox
+      - soundbox offline
+      - device not getting internet
+      - wifi signal not connecting
+
+  - intent: device_gsm_issue
+    examples: |
+      - SIM not working in soundbox
+      - no signal on device
+      - GSM issue on soundbox
+      - SIM card not detected
+      - no network signal
+      - device showing no SIM
+      - SIM not inserted error
+      - network error on soundbox
+      - device can't find SIM
+      - mobile data not working on device
+      - SIM registration failed
+      - no cellular connection
+      - SIM card problem
+      - network bars showing zero
+
+  - intent: device_button_stuck
+    examples: |
+      - button stuck on soundbox
+      - device button not working
+      - power button not responding
+      - volume button stuck
+      - buttons not working on device
+      - keypad issue
+      - device buttons are stuck
+
+  - intent: device_replace_request
+    examples: |
+      - I want a new soundbox
+      - replace my device
+      - device replacement request
+      - my soundbox needs replacement
+      - I need a new device
+      - device is damaged beyond repair
+      - request replacement for soundbox
+      - I want to swap my device
+      - please send me a replacement
+      - this device needs to be replaced
+      - old device needs replacement
+      - device is faulty please replace
+
+  - intent: device_reset_request
+    examples: |
+      - reset my soundbox
+      - factory reset the device
+      - reset device to factory settings
+      - I want to reset my soundbox
+      - clear all data on device
+      - do a factory reset
+      - hard reset soundbox
+      - restore device to default settings
+
+# ─── TRANSACTION ISSUES ──────────────────────────────────────────────────────
+
+  - intent: transaction_failed
+    examples: |
+      - transaction failed
+      - payment failed
+      - my transaction didn't go through
+      - payment was not successful
+      - transaction declined
+      - payment rejected
+      - transaction error
+      - failed payment
+      - payment not processed
+      - transaction unsuccessful
+      - UPI transaction failed
+      - payment got declined
+      - my payment just failed
+      - the transaction shows failed status
+      - error in payment
+      - transaction was rejected by bank
+      - payment failure occurred
+      - the customer's payment failed
+      - transaction attempt failed
+      - I got a payment failure
+      - transaction showing error
+      - customer tried to pay but it failed
+
+  - intent: transaction_pending
+    examples: |
+      - transaction is pending
+      - payment stuck in pending
+      - payment not confirmed yet
+      - transaction showing pending status
+      - money deducted but transaction pending
+      - pending payment
+      - payment still processing
+      - transaction in progress for too long
+      - payment not completed
+      - transaction on hold
+      - UPI payment pending
+      - money gone but transaction pending
+      - payment is in pending state
+      - how long does pending take
+      - my payment is still pending since yesterday
+
+  - intent: transaction_double_debit
+    examples: |
+      - money debited twice
+      - double payment
+      - charged twice
+      - duplicate transaction
+      - two payments for one transaction
+      - amount deducted two times
+      - double debit issue
+      - customer was charged twice
+      - same transaction happened twice
+      - duplicate charge
+      - payment processed twice
+      - money gone twice for same bill
+      - duplicate payment happened
+
+  - intent: transaction_refund_request
+    examples: |
+      - I want a refund
+      - customer wants money back
+      - process a refund
+      - return the payment
+      - refund please
+      - initiate refund
+      - give money back
+      - refund the transaction
+      - customer is asking for refund
+      - I need to refund a customer
+      - refund request
+      - reverse the payment
+      - reverse this transaction
+      - how do I give a refund
+      - can you initiate a refund for me
+
+  - intent: transaction_settlement_delay
+    examples: |
+      - settlement not done yet
+      - where is my settlement
+      - settlement delayed
+      - money not credited to bank
+      - settlement not received
+      - when will I get my settlement
+      - settlement is late
+      - yesterday's payments not settled
+      - settlement amount pending
+      - daily settlement not received
+      - T+1 settlement not arrived
+      - why is settlement delayed
+
+  - intent: transaction_wrong_amount
+    examples: |
+      - wrong amount in transaction
+      - incorrect payment amount
+      - different amount charged
+      - customer paid wrong amount
+      - amount mismatch
+      - billed wrong amount
+      - the transaction amount is wrong
+      - extra money was charged
+      - less money was received
+      - amount doesn't match
+
+  - intent: transaction_not_received
+    examples: |
+      - payment not received
+      - I didn't get the payment
+      - customer paid but I didn't receive
+      - money not showing in account
+      - payment sent but not received
+      - UPI payment done but not received
+      - payer shows success but I didn't get
+      - funds not received
+      - customer's payment not coming to me
+
+  - intent: transaction_status_check
+    examples: |
+      - check my transaction status
+      - what is the status of my payment
+      - transaction status
+      - check payment status
+      - look up transaction
+      - find my transaction
+      - where is my transaction
+      - track payment
+      - I want to check a specific transaction
+      - status of UTR number
+      - look up UTR
+
+# ─── UPI / PAYMENT ISSUES ────────────────────────────────────────────────────
+
+  - intent: upi_not_working
+    examples: |
+      - UPI not working
+      - UPI payments not going through
+      - UPI service down
+      - can't accept UPI payments
+      - UPI is not functioning
+      - having trouble with UPI
+      - UPI acceptance issue
+      - unable to receive UPI payments
+      - UPI problem on my soundbox
+      - UPI stopped working suddenly
+
+  - intent: upi_id_not_linked
+    examples: |
+      - UPI ID not linked
+      - VPA not linked to soundbox
+      - my UPI ID is missing
+      - UPI not registered on device
+      - need to link UPI ID
+      - UPI ID showing error
+      - how to link UPI ID
+      - UPI ID not configured
+
+  - intent: upi_bank_issue
+    examples: |
+      - bank UPI server down
+      - my bank UPI is not working
+      - UPI not working for specific bank
+      - HDFC UPI down
+      - SBI UPI not working
+      - bank is having issues with UPI
+      - UPI rejected by bank
+      - bank server error during UPI
+
+  - intent: upi_limit_exceeded
+    examples: |
+      - UPI limit exceeded
+      - daily UPI limit reached
+      - transaction limit exceeded
+      - UPI daily cap reached
+      - exceeded UPI limit
+      - bank declined due to limit
+      - UPI daily limit hit
+
+  - intent: qr_code_issue
+    examples: |
+      - QR code not scanning
+      - QR code issue
+      - customer can't scan QR
+      - QR code not working
+      - QR not readable
+      - QR code damaged
+      - QR scan failing
+      - customers having trouble scanning my QR
+      - QR code faded
+      - can't scan the QR
+      - QR is not generating
+      - new QR code needed
+
+  - intent: payment_success_no_beep
+    examples: |
+      - payment done but no beep
+      - transaction successful but no sound
+      - payment came but device didn't announce
+      - received payment but no confirmation sound
+      - payment success no audio
+      - money received but soundbox didn't say anything
+      - UPI came through but no beep
+      - silent after payment
+      - transaction complete but no announcement
+
+# ─── ACCOUNT & KYC ───────────────────────────────────────────────────────────
+
+  - intent: account_suspended
+    examples: |
+      - my account is suspended
+      - account blocked
+      - account deactivated
+      - account is not active
+      - my merchant account is suspended
+      - account blocked by iserveu
+      - why is my account suspended
+      - can't access account
+      - account has been suspended
+      - account disabled
+      - account frozen
+      - my account got blocked
+
+  - intent: kyc_pending
+    examples: |
+      - KYC is pending
+      - KYC not done
+      - KYC verification pending
+      - complete my KYC
+      - KYC documents pending
+      - how to complete KYC
+      - KYC showing pending
+      - need to submit KYC
+      - KYC not verified
+      - where to upload KYC documents
+
+  - intent: kyc_document_upload
+    examples: |
+      - how to upload KYC documents
+      - where to submit documents
+      - upload aadhaar card
+      - submit PAN card
+      - upload business documents
+      - how do I send my documents
+      - document submission process
+      - I want to upload my KYC files
+
+  - intent: account_status_check
+    examples: |
+      - check my account status
+      - what is my account status
+      - is my account active
+      - account status
+      - check account
+      - account details
+      - my account information
+
+  - intent: merchant_details_update
+    examples: |
+      - update my merchant details
+      - change my business name
+      - update my address
+      - change registered mobile number
+      - update contact details
+      - modify merchant information
+      - change store name
+
+  - intent: bank_account_change
+    examples: |
+      - change my bank account
+      - update bank details
+      - new bank account for settlement
+      - change settlement account
+      - update IFSC code
+      - switch settlement bank
+      - I changed my bank account
+
+# ─── SETTLEMENT ──────────────────────────────────────────────────────────────
+
+  - intent: settlement_not_received
+    examples: |
+      - settlement not received
+      - money not in bank account
+      - settlement not credited
+      - where is my settlement amount
+      - daily settlement missing
+      - payment not settled
+      - settlement credit pending
+      - funds not received in bank
+
+  - intent: settlement_delay
+    examples: |
+      - settlement is delayed
+      - taking too long for settlement
+      - settlement delay issue
+      - why is settlement late
+      - settlement should have come by now
+      - unusually late settlement
+      - settlement is overdue
+
+  - intent: settlement_amount_wrong
+    examples: |
+      - settlement amount is wrong
+      - received less settlement
+      - settlement less than expected
+      - settlement amount mismatch
+      - why is settlement amount different
+      - wrong settlement amount credited
+      - settlement calculation seems off
+
+  - intent: settlement_cycle_query
+    examples: |
+      - when do I get my settlement
+      - what is the settlement cycle
+      - how long for settlement
+      - settlement timing
+      - settlement schedule
+      - T+1 settlement meaning
+      - when does money come to my account after payment
+      - settlement frequency
+      - how many days for settlement
+
+# ─── ONBOARDING ──────────────────────────────────────────────────────────────
+
+  - intent: onboarding_help
+    examples: |
+      - I'm new and need help setting up
+      - help me get started
+      - how to use the soundbox
+      - new merchant setup
+      - just received my soundbox
+      - how do I begin
+      - first time setup
+      - onboarding help
+      - I just got my device
+
+  - intent: app_setup_help
+    examples: |
+      - how to set up the merchant app
+      - merchant app not working
+      - how to install the app
+      - app setup help
+      - can't login to merchant app
+      - merchant app setup
+      - which app to download
+      - iserveu app setup
+
+  - intent: device_setup_help
+    examples: |
+      - how to set up soundbox
+      - soundbox setup guide
+      - how to configure the device
+      - how to register the device
+      - device activation help
+      - how to activate soundbox
+      - soundbox first time setup
+      - help me configure my device
+
+  - intent: sim_setup_help
+    examples: |
+      - how to insert SIM in soundbox
+      - SIM setup help
+      - SIM card installation
+      - how to put SIM in device
+      - SIM not inserted
+      - how to configure SIM
+      - SIM setup in payment device
+
+# ─── ESCALATION ──────────────────────────────────────────────────────────────
+
+  - intent: escalate_to_human
+    examples: |
+      - connect me to a human
+      - I want to talk to a person
+      - speak to human agent
+      - transfer to human support
+      - I need a real person
+      - agent please
+      - speak to someone
+      - human please
+      - transfer me to customer care
+      - real agent please
+      - I want to speak to customer support
+      - connect me to your team
+      - I want live support
+      - speak with a representative
+      - I need human assistance
+      - this bot isn't helping
+
+  - intent: complaint_register
+    examples: |
+      - I want to register a complaint
+      - file a complaint
+      - raise a complaint
+      - complaint registration
+      - log a complaint
+      - I have a complaint
+      - I want to report an issue
+      - raise ticket
+      - create support ticket
+      - file grievance
+      - I want to escalate this issue
+
+  - intent: complaint_status
+    examples: |
+      - what is the status of my complaint
+      - complaint status
+      - check my complaint
+      - where is my complaint
+      - complaint update
+      - any update on my complaint
+      - complaint number status
+      - track my complaint
+      - check ticket status
+
+# ─── SLOT PROVIDERS ──────────────────────────────────────────────────────────
+
+  - intent: provide_msisdn
+    examples: |
+      - my number is [9876543210](msisdn)
+      - [9123456789](msisdn)
+      - mobile number [8877665544](msisdn)
+      - it's [7654321098](msisdn)
+      - registered number [9988776655](msisdn)
+      - my MSISDN is [9001234567](msisdn)
+      - [9112233445](msisdn) is my number
+      - phone number [8001234567](msisdn)
+      - [7890123456](msisdn)
+      - number is [9876001234](msisdn)
+
+  - intent: provide_transaction_id
+    examples: |
+      - transaction ID is [TXN123456789](transaction_id)
+      - UTR number [UTR123456789012](transaction_id)
+      - reference number [REF987654321](transaction_id)
+      - transaction reference [TXN987654](transaction_id)
+      - my UTR is [400123456789](transaction_id)
+      - payment ID [PAY123456789](transaction_id)
+      - transaction number [TXN20261007](transaction_id)
+      - the UTR is [UTR400123456789](transaction_id)
+
+  - intent: provide_device_serial
+    examples: |
+      - serial number is [SBX-99824](device_serial)
+      - device serial [SBX-12345](device_serial)
+      - my device is [SBX-67890](device_serial)
+      - serial [SBX-11223](device_serial)
+      - the serial number on my device is [SBX-44556](device_serial)
+      - device ID [SBX-78901](device_serial)
+      - [SBX-33445](device_serial) is my device serial
+
+  - intent: provide_amount
+    examples: |
+      - amount was [500](amount) rupees
+      - transaction was for [1200](amount)
+      - [250.50](amount) INR
+      - the amount is [10000](amount)
+      - paid [750](amount)
+      - [5000](amount) rupees
+      - amount [150](amount)
+      - ₹[2500](amount)
+
+  - intent: provide_date
+    examples: |
+      - it was on [07/10/2026](date)
+      - the date was [October 7 2026](date)
+      - [yesterday](date)
+      - transaction happened on [06/10/2026](date)
+      - [today](date)
+      - it was [last Monday](date)
+      - date [05/10/2026](date)
+      - happened [2 days ago](date)
+
+  - intent: provide_upi_id
+    examples: |
+      - my UPI ID is [sharma@sbi](upi_id)
+      - VPA is [9876543210@paytm](upi_id)
+      - [merchant.store@upi](upi_id)
+      - UPI ID [9001234567@ybl](upi_id)
+      - my VPA is [store.name@okaxis](upi_id)
+      - [shop123@icici](upi_id)
+
+  - intent: provide_bank_name
+    examples: |
+      - my bank is [SBI](bank_name)
+      - I have an account with [HDFC](bank_name)
+      - [ICICI Bank](bank_name)
+      - bank is [Axis Bank](bank_name)
+      - [Kotak Mahindra](bank_name)
+      - I use [Punjab National Bank](bank_name)
+      - [Bank of Baroda](bank_name)
+      - [Canara Bank](bank_name)
+      - [Yes Bank](bank_name)
