@@ -1,0 +1,151 @@
+version: "3.1"
+
+# ============================================================
+#  AI-DRCS  —  Lookup Tables & Regex Patterns
+#  Used by RegexEntityExtractor for structured entity extraction.
+# ============================================================
+
+nlu:
+
+# ─── MSISDN (Indian mobile numbers) ─────────────────────────────────────────
+  - regex: msisdn
+    examples: |
+      - \b[6-9]\d{9}\b
+      - \+91[6-9]\d{9}\b
+      - 91[6-9]\d{9}\b
+
+# ─── Transaction ID / UTR patterns ───────────────────────────────────────────
+  - regex: transaction_id
+    examples: |
+      - \bUTR\d{12,18}\b
+      - \bTXN[A-Z0-9]{6,20}\b
+      - \bREF[A-Z0-9]{6,20}\b
+      - \bPAY[A-Z0-9]{6,20}\b
+      - \b[0-9]{12,18}\b
+      - \b[A-Z]{2,4}[0-9]{8,16}\b
+
+# ─── Device Serial Number ────────────────────────────────────────────────────
+  - regex: device_serial
+    examples: |
+      - \bSBX-\d{4,8}\b
+      - \bSBX\d{4,8}\b
+
+# ─── Amount in INR ───────────────────────────────────────────────────────────
+  - regex: amount
+    examples: |
+      - ₹\s?\d+(?:,\d{3})*(?:\.\d{2})?
+      - Rs\.?\s?\d+(?:,\d{3})*(?:\.\d{2})?
+      - INR\s?\d+(?:,\d{3})*(?:\.\d{2})?
+      - \b\d+(?:,\d{3})*(?:\.\d{2})?\s?(?:rupees?|INR)\b
+
+# ─── UPI ID / VPA ────────────────────────────────────────────────────────────
+  - regex: upi_id
+    examples: |
+      - \b[a-zA-Z0-9._-]+@[a-zA-Z]{2,}\b
+
+# ─── Complaint ID ────────────────────────────────────────────────────────────
+  - regex: complaint_id
+    examples: |
+      - \bCMP-[A-Z0-9]{7}\b
+
+# ─── BANK NAME Lookup ────────────────────────────────────────────────────────
+  - lookup: bank_name
+    examples: |
+      - SBI
+      - State Bank of India
+      - HDFC
+      - HDFC Bank
+      - ICICI
+      - ICICI Bank
+      - Axis Bank
+      - Axis
+      - Kotak
+      - Kotak Mahindra Bank
+      - Punjab National Bank
+      - PNB
+      - Bank of Baroda
+      - BOB
+      - Canara Bank
+      - Canara
+      - Yes Bank
+      - IndusInd Bank
+      - IndusInd
+      - Federal Bank
+      - RBL Bank
+      - IDFC First Bank
+      - IDFC
+      - UCO Bank
+      - Union Bank
+      - Union Bank of India
+      - Indian Bank
+      - Central Bank of India
+      - Bank of India
+      - IOB
+      - Indian Overseas Bank
+      - Karnataka Bank
+      - South Indian Bank
+      - Bandhan Bank
+      - DCB Bank
+      - ESAF Bank
+      - Ujjivan Bank
+      - Suryoday Bank
+      - Paytm Payments Bank
+      - Airtel Payments Bank
+      - Fino Payments Bank
+      - NSDL Payments Bank
+
+# ─── ERROR CODE Lookup ───────────────────────────────────────────────────────
+  - lookup: error_code
+    examples: |
+      - U16
+      - U30
+      - U68
+      - U69
+      - U66
+      - UPI-1
+      - UPI-2
+      - P04
+      - P05
+      - BA301
+      - UT01
+      - UT02
+      - YF01
+      - Z9
+      - Z6
+      - XB
+      - XJ
+
+# ─── ISSUE TYPE Synonyms ─────────────────────────────────────────────────────
+  - synonym: device
+    examples: |
+      - soundbox
+      - terminal
+      - machine
+      - pos
+      - payment device
+      - hardware
+
+  - synonym: transaction
+    examples: |
+      - payment
+      - transfer
+      - utr
+      - txn
+      - debit
+      - credit
+
+  - synonym: settlement
+    examples: |
+      - payout
+      - disbursal
+      - credit
+      - settlement amount
+      - t+1
+
+  - synonym: account
+    examples: |
+      - kyc
+      - merchant profile
+      - merchant account
+      - profile
+      - registration
