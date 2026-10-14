@@ -1,8 +1,7 @@
 import os
-import json
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import Response
 from pydantic import BaseModel
 from docx import Document as DocxDocument
 from chonkie import SlumberChunker, QdrantHandshake, Model2VecEmbeddings
@@ -10,12 +9,11 @@ from chonkie.genie import GroqGenie
 from groq import Groq
 import tempfile
 
-# ── Credentials ──────────────────────────────────────────────
 GROQ_API_KEY   = os.environ.get("GROQ_API_KEY", "")
 QDRANT_URL     = "https://f9aedf04-256b-465a-bd31-2849d08c7564.eu-west-2-0.aws.cloud.qdrant.io"
 QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY", "")
-QA_MODEL       = "qwen/qwen3.8-27b"
-CHUNK_MODEL    = "qwen/qwen3.8-27b"
+QA_MODEL       = "qwen/qwen3-32b"
+CHUNK_MODEL    = "qwen/qwen3-32b"
 
 os.environ["GROQ_API_KEY"] = GROQ_API_KEY
 
@@ -24,15 +22,39 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
-# ── Shared state ─────────────────────────────────────────────
-embedder     = Model2VecEmbeddings("minishlab/potion-base-32M")
-groq_client  = Groq(api_key=GROQ_API_KEY)
+@app.options("/{rest_of_path:path}")
+async def preflight(rest_of_path: str, request: Request):
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
+
+# ── Lazy globals (loaded on first request, not at startup) ────
+_embedder    = None
+_groq_client = None
 handshakes   = {}
 
+def get_embedder():
+    global _embedder
+    if _embedder is None:
+        _embedder = Model2VecEmbeddings("minishlab/potion-base-32M")
+    return _embedder
+
+def get_groq_client():
+    global _groq_client
+    if _groq_client is None:
+        _groq_client = Groq(api_key=GROQ_API_KEY)
+    return _groq_client
 
 def get_or_create_handshake(collection: str) -> QdrantHandshake:
     if collection not in handshakes:
@@ -40,10 +62,9 @@ def get_or_create_handshake(collection: str) -> QdrantHandshake:
             url=QDRANT_URL,
             api_key=QDRANT_API_KEY,
             collection_name=collection,
-            embedding_model=embedder,
+            embedding_model=get_embedder(),
         )
     return handshakes[collection]
-
 
 def extract_text(file_bytes: bytes, filename: str) -> str:
     ext = filename.rsplit(".", 1)[-1].lower()
@@ -89,7 +110,7 @@ async def ingest(
         url=QDRANT_URL,
         api_key=QDRANT_API_KEY,
         collection_name=collection,
-        embedding_model=embedder,
+        embedding_model=get_embedder(),
     )
     hs.write(chunks)
     handshakes[collection] = hs
@@ -141,7 +162,7 @@ QUESTION: {req.question}
 
 ANSWER:"""
 
-    response = groq_client.chat.completions.create(
+    response = get_groq_client().chat.completions.create(
         model=QA_MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.2,
